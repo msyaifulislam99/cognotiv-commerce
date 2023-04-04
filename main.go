@@ -1,7 +1,10 @@
 package main
 
 import (
+	"time"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"syaiful.com/simple-commerce/configuration"
 	"syaiful.com/simple-commerce/controller"
 	"syaiful.com/simple-commerce/exception"
@@ -32,6 +35,11 @@ func main() {
 	app := fiber.New(fiber.Config{
 		ErrorHandler: exception.ErrorHandler,
 	})
+
+	app.Use(limiter.New(limiter.Config{
+		Max:        100,
+		Expiration: 1 * time.Minute,
+	}))
 
 	productController.Route(app)
 	userController.Route(app)
