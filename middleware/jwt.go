@@ -17,6 +17,7 @@ func AuthenticateJWT(role string, config configuration.Config) func(*fiber.Ctx) 
 			user := ctx.Locals("user").(*jwt.Token)
 			claims := user.Claims.(jwt.MapClaims)
 			roles := claims["roles"].([]interface{})
+			ctx.Locals("user_id", claims["user_id"])
 
 			common.NewLogger().Info("role function ", role, " role user ", roles)
 			for _, roleInterface := range roles {

@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"syaiful.com/simple-commerce/common"
@@ -12,8 +13,8 @@ import (
 	"syaiful.com/simple-commerce/service"
 )
 
-func NewOrderServiceImpl(orderRepository *repository.OrderRepository) service.OrderService {
-	return &orderServiceImpl{repo: *orderRepository}
+func NewOrderServiceImpl(orderRepository *repository.OrderRepository, _productRepo *repository.ProductRepository) service.OrderService {
+	return &orderServiceImpl{repo: *orderRepository, productRepo: *_productRepo}
 }
 
 type orderServiceImpl struct {
@@ -21,7 +22,7 @@ type orderServiceImpl struct {
 	productRepo repository.ProductRepository
 }
 
-func (orderService *orderServiceImpl) Create(ctx context.Context, orderModel model.OrderCreateModel) model.OrderCreateUpdateModel {
+func (orderService *orderServiceImpl) Create(ctx context.Context, orderModel model.OrderCreateModel, userId string) model.OrderCreateUpdateModel {
 	common.Validate(orderModel)
 	uuidGenerate := uuid.New()
 	var orderDetails []entity.OrderDetail
@@ -41,11 +42,19 @@ func (orderService *orderServiceImpl) Create(ctx context.Context, orderModel mod
 	}
 
 	orderId := uuid.New()
+	parseUserId, err := uuid.Parse(userId)
+	if err != nil {
+		panic(exception.NotFoundError{
+			Message: err.Error(),
+		})
+	}
 
 	order := entity.Order{
-		Id:           orderId,
-		TotalPrice:   totalPrice,
-		OrderDetails: orderDetails,
+		Id:              orderId,
+		TotalPrice:      totalPrice,
+		OrderDetails:    orderDetails,
+		TransactionDate: time.Now(),
+		UserId:          parseUserId,
 	}
 
 	orderService.repo.Insert(ctx, order)

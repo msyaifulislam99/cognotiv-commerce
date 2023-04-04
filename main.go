@@ -21,7 +21,7 @@ func main() {
 
 	productService := service.NewProductServiceImpl(&productRepository)
 	userService := service.NewUserServiceImpl(&userRepository)
-	orderService := service.NewOrderServiceImpl(&orderRepository)
+	orderService := service.NewOrderServiceImpl(&orderRepository, &productRepository)
 	orderDetailService := service.NewOrderDetailServiceImpl(&orderDetailRepository)
 
 	productController := controller.NewProductController(&productService, config)

@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"syaiful.com/simple-commerce/configuration"
 	"syaiful.com/simple-commerce/exception"
@@ -30,7 +32,10 @@ func (controller OrderController) Create(c *fiber.Ctx) error {
 	err := c.BodyParser(&request)
 	exception.PanicLogging(err)
 
-	response := controller.OrderService.Create(c.Context(), request)
+	idLocal := c.Locals("user_id")
+	strId := fmt.Sprintf("%v", idLocal)
+
+	response := controller.OrderService.Create(c.Context(), request, strId)
 	return c.Status(fiber.StatusCreated).JSON(model.GeneralResponse{
 		Code:    200,
 		Message: "Success",
