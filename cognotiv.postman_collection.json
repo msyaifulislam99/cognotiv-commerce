@@ -1,0 +1,194 @@
+{
+	"info": {
+		"_postman_id": "96f8f1d0-44c6-47b7-9e3c-8330c169ef54",
+		"name": "cognotiv",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5492040"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"user@user.com\",\n    \"password\": \"pass\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/v1/api/authentication",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"api",
+						"authentication"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "all products",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/v1/api/product",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"api",
+						"product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "order",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODA2MDc4NzMsInJvbGVzIjpbeyJyb2xlIjoiUk9MRV9VU0VSIn1dLCJ1c2VyX2lkIjoiMTRhOTM0OTAtN2IxYy00YWFhLTk4ZmEtNTkxMWMwZGE3Y2Y0IiwidXNlcm5hbWUiOiJ1c2VyQHVzZXIuY29tIn0.T_ekm738yjCPrM83KOwJvjgdvKJVYdWHj83eZcAcUG8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"product\": [\n        {\"productId\": \"f0b88290-7948-4d6f-91be-4b8896c4f6d2\", \"qty\": 3},\n        {\"productId\": \"c5dd6638-9ec1-41a3-ae5e-51a82df61a2d\", \"qty\": 4}\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/v1/api/order",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"api",
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user orders",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODA2MjMxNDksInJvbGVzIjpbeyJyb2xlIjoiUk9MRV9VU0VSIn1dLCJ1c2VyX2lkIjoiMTRhOTM0OTAtN2IxYy00YWFhLTk4ZmEtNTkxMWMwZGE3Y2Y0IiwidXNlcm5hbWUiOiJ1c2VyQHVzZXIuY29tIn0.8EtYvJAYoNWgAbCwK7Cvz8jJ_hLsyEhFSLpm8itktTI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/v1/api/order",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"api",
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "admin all orders",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODA2MjQwMTEsInJvbGVzIjpbeyJyb2xlIjoiUk9MRV9VU0VSIn0seyJyb2xlIjoiUk9MRV9BRE1JTiJ9XSwidXNlcl9pZCI6IjE0YTkzNDkwLTdiMWMtNGFhYS05OGZhLTU5MTFjMGRhN2NmNCIsInVzZXJuYW1lIjoidXNlckB1c2VyLmNvbSJ9.veO2X6hlTIKxtHB9d7lp_TjAJkA9Onyprmk7tHMqpVA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/v1/api/all-order",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"api",
+						"all-order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "admin get report",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODA2MjkyNjAsInJvbGVzIjpbeyJyb2xlIjoiUk9MRV9VU0VSIn0seyJyb2xlIjoiUk9MRV9BRE1JTiJ9XSwidXNlcl9pZCI6IjE0YTkzNDkwLTdiMWMtNGFhYS05OGZhLTU5MTFjMGRhN2NmNCIsInVzZXJuYW1lIjoidXNlckB1c2VyLmNvbSJ9.AsUVjoBCeEduSm9FBPGk57xAoT8ujSfW2SXwMPOYM9k",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/v1/api/get-report",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"v1",
+						"api",
+						"get-report"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
