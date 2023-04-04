@@ -26,7 +26,7 @@ func (controller OrderController) Route(app *fiber.App) {
 }
 
 func (controller OrderController) Create(c *fiber.Ctx) error {
-	var request model.OrderCreateUpdateModel
+	var request model.OrderCreateModel
 	err := c.BodyParser(&request)
 	exception.PanicLogging(err)
 

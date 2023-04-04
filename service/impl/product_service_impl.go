@@ -13,11 +13,11 @@ import (
 )
 
 func NewProductServiceImpl(productRepository *repository.ProductRepository) service.ProductService {
-	return &productServiceImpl{ProductRepository: *productRepository}
+	return &productServiceImpl{repo: *productRepository}
 }
 
 type productServiceImpl struct {
-	repository.ProductRepository
+	repo repository.ProductRepository
 }
 
 func (service *productServiceImpl) Create(ctx context.Context, productModel model.ProductCreateOrUpdateModel) model.ProductCreateOrUpdateModel {
@@ -28,7 +28,7 @@ func (service *productServiceImpl) Create(ctx context.Context, productModel mode
 		Description: productModel.Description,
 		Image:       productModel.Image,
 	}
-	service.ProductRepository.Insert(ctx, product)
+	service.repo.Insert(ctx, product)
 	return productModel
 }
 
@@ -41,22 +41,22 @@ func (service *productServiceImpl) Update(ctx context.Context, productModel mode
 		Description: productModel.Description,
 		Image:       productModel.Image,
 	}
-	service.ProductRepository.Update(ctx, product)
+	service.repo.Update(ctx, product)
 	return productModel
 }
 
 func (service *productServiceImpl) Delete(ctx context.Context, id string) {
-	product, err := service.ProductRepository.FindById(ctx, id)
+	product, err := service.repo.FindById(ctx, id)
 	if err != nil {
 		panic(exception.NotFoundError{
 			Message: err.Error(),
 		})
 	}
-	service.ProductRepository.Delete(ctx, product)
+	service.repo.Delete(ctx, product)
 }
 
 func (service *productServiceImpl) FindById(ctx context.Context, id string) model.ProductModel {
-	product, _ := service.ProductRepository.FindById(ctx, id)
+	product, _ := service.repo.FindById(ctx, id)
 	return model.ProductModel{
 		Id:          product.Id.String(),
 		Name:        product.Name,
@@ -67,7 +67,7 @@ func (service *productServiceImpl) FindById(ctx context.Context, id string) mode
 }
 
 func (service *productServiceImpl) FindAll(ctx context.Context) (responses []model.ProductModel) {
-	products := service.ProductRepository.FindAl(ctx)
+	products := service.repo.FindAl(ctx)
 	for _, product := range products {
 		responses = append(responses, model.ProductModel{
 			Id:          product.Id.String(),

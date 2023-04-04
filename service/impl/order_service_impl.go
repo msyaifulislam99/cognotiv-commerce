@@ -13,53 +13,60 @@ import (
 )
 
 func NewOrderServiceImpl(orderRepository *repository.OrderRepository) service.OrderService {
-	return &orderServiceImpl{OrderRepository: *orderRepository}
+	return &orderServiceImpl{repo: *orderRepository}
 }
 
 type orderServiceImpl struct {
-	repository.OrderRepository
+	repo        repository.OrderRepository
+	productRepo repository.ProductRepository
 }
 
-func (orderService *orderServiceImpl) Create(ctx context.Context, orderModel model.OrderCreateUpdateModel) model.OrderCreateUpdateModel {
+func (orderService *orderServiceImpl) Create(ctx context.Context, orderModel model.OrderCreateModel) model.OrderCreateUpdateModel {
 	common.Validate(orderModel)
 	uuidGenerate := uuid.New()
 	var orderDetails []entity.OrderDetail
 	var totalPrice int64 = 0
 
-	for _, detail := range orderModel.OrderDetails {
-		totalPrice = totalPrice + detail.SubTotalPrice
+	for _, detail := range orderModel.Product {
+		product, _ := orderService.productRepo.FindById(ctx, detail.Id)
+		totalPrice = totalPrice + (product.Price * detail.Qty)
 		orderDetails = append(orderDetails, entity.OrderDetail{
 			OrderId:       uuidGenerate,
-			ProductId:     detail.ProductId,
+			ProductId:     product.Id,
 			Id:            uuid.New(),
-			SubTotalPrice: detail.SubTotalPrice,
-			Price:         detail.Price,
-			Quantity:      detail.Quantity,
+			SubTotalPrice: product.Price * detail.Qty,
+			Price:         product.Price,
+			Quantity:      int32(detail.Qty),
 		})
 	}
 
+	orderId := uuid.New()
+
 	order := entity.Order{
-		Id:           uuid.New(),
+		Id:           orderId,
 		TotalPrice:   totalPrice,
 		OrderDetails: orderDetails,
 	}
 
-	orderService.OrderRepository.Insert(ctx, order)
-	return orderModel
+	orderService.repo.Insert(ctx, order)
+	return model.OrderCreateUpdateModel{
+		Id:         orderId.String(),
+		TotalPrice: &order.TotalPrice,
+	}
 }
 
 func (orderService *orderServiceImpl) Delete(ctx context.Context, id string) {
-	order, err := orderService.OrderRepository.FindById(ctx, id)
+	order, err := orderService.repo.FindById(ctx, id)
 	if err != nil {
 		panic(exception.NotFoundError{
 			Message: err.Error(),
 		})
 	}
-	orderService.OrderRepository.Delete(ctx, order)
+	orderService.repo.Delete(ctx, order)
 }
 
 func (orderService *orderServiceImpl) FindById(ctx context.Context, id string) model.OrderModel {
-	order, err := orderService.OrderRepository.FindById(ctx, id)
+	order, err := orderService.repo.FindById(ctx, id)
 	if err != nil {
 		panic(exception.NotFoundError{
 			Message: err.Error(),
@@ -90,7 +97,7 @@ func (orderService *orderServiceImpl) FindById(ctx context.Context, id string) m
 }
 
 func (orderService *orderServiceImpl) FindAll(ctx context.Context) (responses []model.OrderModel) {
-	orders := orderService.OrderRepository.FindAll(ctx)
+	orders := orderService.repo.FindAll(ctx)
 	for _, order := range orders {
 		var orderDetails []model.OrderDetailModel
 		for _, detail := range order.OrderDetails {

@@ -15,7 +15,12 @@ type OrderCreateUpdateModel struct {
 }
 
 type OrderCreateModel struct {
-	Product []string `json:"product"`
+	Product []ProductWithQty `json:"product" validate:"min=1"`
+}
+
+type ProductWithQty struct {
+	Id  string `json:"productId"`
+	Qty int64  `json:"qty"`
 }
 
 type OrderDetailModel struct {
