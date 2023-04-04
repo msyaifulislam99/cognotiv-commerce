@@ -11,6 +11,7 @@ type Order struct {
 	TotalPrice      int64         `gorm:"column:total_price"`
 	OrderDetails    []OrderDetail `gorm:"ForeignKey:OrderId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	TransactionDate time.Time     `gorm:"column:transaction_date"`
+	Status          string        `gorm:"column:status;default:pending"`
 	UserId          uuid.UUID
 	User            User
 }
