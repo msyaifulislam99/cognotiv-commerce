@@ -57,6 +57,19 @@ func (orderRepository *orderRepositoryImpl) FindAll(ctx context.Context) []entit
 	return orders
 }
 
+func (orderRepository *orderRepositoryImpl) FindAllPending(ctx context.Context) []entity.Order {
+	var orders []entity.Order
+	orderRepository.DB.WithContext(ctx).
+		Table("order").
+		Select(`"order".*`).
+		Preload("OrderDetails").
+		Preload("OrderDetails.Product").
+		Preload("User").
+		Where(`"order".status = ?`, "pending").
+		Find(&orders)
+	return orders
+}
+
 func (orderRepository *orderRepositoryImpl) FindMyOrders(ctx context.Context, userId string) []entity.Order {
 	var orders []entity.Order
 	orderRepository.DB.WithContext(ctx).

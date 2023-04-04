@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -24,7 +26,7 @@ func main() {
 
 	productService := service.NewProductServiceImpl(&productRepository)
 	userService := service.NewUserServiceImpl(&userRepository)
-	orderService := service.NewOrderServiceImpl(&orderRepository, &productRepository)
+	orderService := service.NewOrderServiceImpl(&orderRepository, &productRepository, config)
 	orderDetailService := service.NewOrderDetailServiceImpl(&orderDetailRepository)
 
 	productController := controller.NewProductController(&productService, config)
@@ -49,6 +51,24 @@ func main() {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World 2!")
 	})
+
+	go func() {
+		for {
+			// now := time.Now()
+
+			// // Calculate duration until midnight
+			// midnight := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, now.Location())
+			// duration := midnight.Sub(now)
+
+			// // Sleep until midnight
+			// time.Sleep(duration)
+			time.Sleep(5 * time.Second)
+
+			fmt.Println("background task running...")
+			orderService.NotifyUser(context.Background())
+			fmt.Println("background task done...")
+		}
+	}()
 
 	app.Listen(":8000")
 }
