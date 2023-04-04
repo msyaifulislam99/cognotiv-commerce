@@ -1,7 +1,10 @@
 package controller
 
 import (
+	"encoding/csv"
 	"fmt"
+	"os"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 	"syaiful.com/simple-commerce/configuration"
@@ -26,6 +29,35 @@ func (controller OrderController) Route(app *fiber.App) {
 	app.Get("/v1/api/order/:id", middleware.AuthenticateJWT("ROLE_USER", controller.Config), controller.FindById)
 	app.Get("/v1/api/order", middleware.AuthenticateJWT("ROLE_USER", controller.Config), controller.FindMyOrderAll)
 	app.Get("/v1/api/all-order", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.FindAll)
+	app.Get("/v1/api/get-report", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.GenerateReport)
+}
+
+func (controller OrderController) GenerateReport(c *fiber.Ctx) error {
+	file, err := os.Create("report.csv")
+	if err != nil {
+		exception.PanicLogging(err)
+	}
+	defer file.Close()
+
+	// Write the CSV data
+	writer := csv.NewWriter(file)
+
+	header := []string{"OrderID", "CustomerName", "OrderDate", "TotalPrice", "Status"}
+	writer.Write(header)
+
+	data := controller.OrderService.FindAllWithUser(c.Context())
+
+	for _, row := range data {
+		writer.Write([]string{row.Id, *row.User.Name, row.TransactionDate.String(), strconv.FormatInt(row.TotalPrice, 10), row.Status})
+	}
+	defer writer.Flush()
+
+	// Set the response headers
+	c.Set("Content-Type", "text/csv")
+	c.Set("Content-Disposition", "attachment; filename=report.csv")
+
+	// Send the file for download
+	return c.SendFile("report.csv")
 }
 
 func (controller OrderController) Create(c *fiber.Ctx) error {

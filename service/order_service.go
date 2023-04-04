@@ -11,5 +11,6 @@ type OrderService interface {
 	Delete(ctx context.Context, id string)
 	FindById(ctx context.Context, id string) model.OrderModel
 	FindAll(ctx context.Context) []model.OrderModel
+	FindAllWithUser(ctx context.Context) []model.OrderModelWithUser
 	FindMyOrder(ctx context.Context, userId string) []model.OrderModel
 }

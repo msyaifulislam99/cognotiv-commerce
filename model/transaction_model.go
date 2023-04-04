@@ -1,11 +1,24 @@
 package model
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type OrderModel struct {
 	Id           string             `json:"id"`
 	TotalPrice   int64              `json:"total_price"`
 	OrderDetails []OrderDetailModel `json:"transaction_details"`
+}
+
+type OrderModelWithUser struct {
+	Id              string             `json:"id"`
+	TotalPrice      int64              `json:"total_price"`
+	TransactionDate time.Time          `json:"transaction_date"`
+	Status          string             `json:"status"`
+	OrderDetails    []OrderDetailModel `json:"transaction_details"`
+	User            UserModel          `json:"customer"`
 }
 
 type OrderCreateUpdateModel struct {

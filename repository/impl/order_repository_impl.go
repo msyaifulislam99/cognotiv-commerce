@@ -52,6 +52,7 @@ func (orderRepository *orderRepositoryImpl) FindAll(ctx context.Context) []entit
 		Select(`"order".*`).
 		Preload("OrderDetails").
 		Preload("OrderDetails.Product").
+		Preload("User").
 		Find(&orders)
 	return orders
 }
