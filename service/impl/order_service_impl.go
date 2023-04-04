@@ -105,7 +105,37 @@ func (orderService *orderServiceImpl) FindById(ctx context.Context, id string) m
 	}
 }
 
-func (orderService *orderServiceImpl) FindAll(ctx context.Context, userId string) (responses []model.OrderModel) {
+func (orderService *orderServiceImpl) FindAll(ctx context.Context) (responses []model.OrderModel) {
+	orders := orderService.repo.FindAll(ctx)
+	for _, order := range orders {
+		var orderDetails []model.OrderDetailModel
+		for _, detail := range order.OrderDetails {
+			orderDetails = append(orderDetails, model.OrderDetailModel{
+				Id:            detail.Id.String(),
+				SubTotalPrice: detail.SubTotalPrice,
+				Price:         detail.Price,
+				Quantity:      detail.Quantity,
+				Product: model.ProductModel{
+					Id:          detail.Product.Id.String(),
+					Name:        detail.Product.Name,
+					Price:       detail.Product.Price,
+					Description: detail.Product.Description,
+					Image:       detail.Product.Image,
+				},
+			})
+		}
+
+		responses = append(responses, model.OrderModel{
+			Id:           order.Id.String(),
+			TotalPrice:   order.TotalPrice,
+			OrderDetails: orderDetails,
+		})
+	}
+
+	return responses
+}
+
+func (orderService *orderServiceImpl) FindMyOrder(ctx context.Context, userId string) (responses []model.OrderModel) {
 	orders := orderService.repo.FindMyOrders(ctx, userId)
 	for _, order := range orders {
 		var orderDetails []model.OrderDetailModel
