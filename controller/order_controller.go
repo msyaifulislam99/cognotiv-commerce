@@ -94,7 +94,10 @@ func (controller OrderController) FindById(c *fiber.Ctx) error {
 // @Security JWT
 // @Router /v1/api/order [get]
 func (controller OrderController) FindAll(c *fiber.Ctx) error {
-	result := controller.OrderService.FindAll(c.Context())
+	idSession := c.Locals("user_id")
+	strId := fmt.Sprintf("%v", idSession)
+
+	result := controller.OrderService.FindAll(c.Context(), strId)
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
 		Code:    200,
 		Message: "Success",

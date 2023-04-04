@@ -31,13 +31,13 @@ func (orderRepository *orderRepositoryImpl) Delete(ctx context.Context, order en
 func (orderRepository *orderRepositoryImpl) FindById(ctx context.Context, id string) (entity.Order, error) {
 	var order entity.Order
 	result := orderRepository.DB.WithContext(ctx).
-		Table("tb_order").
-		Select("tb_order.order_id, tb_order.total_price, tb_order_detail.order_detail_id, tb_order_detail.sub_total_price, tb_order_detail.price, tb_order_detail.quantity, tb_product.product_id, tb_product.name, tb_product.price, tb_product.quantity").
-		Joins("join tb_order_detail on tb_order_detail.order_id = tb_order.order_id").
-		Joins("join tb_product on tb_product.product_id = tb_order_detail.product_id").
+		Table("order").
+		Select("order.order_id, order.total_price, order_detail.order_detail_id, order_detail.sub_total_price, order_detail.price, order_detail.quantity, tb_product.product_id, tb_product.name, tb_product.price, tb_product.quantity").
+		Joins("join order_detail on order_detail.order_id = order.order_id").
+		Joins("join tb_product on tb_product.product_id = order_detail.product_id").
 		Preload("OrderDetails").
 		Preload("OrderDetails.Product").
-		Where("tb_order.order_id = ?", id).
+		Where("order.order_id = ?", id).
 		First(&order)
 	if result.RowsAffected == 0 {
 		return entity.Order{}, errors.New("order Not Found")
@@ -48,12 +48,26 @@ func (orderRepository *orderRepositoryImpl) FindById(ctx context.Context, id str
 func (orderRepository *orderRepositoryImpl) FindAll(ctx context.Context) []entity.Order {
 	var orders []entity.Order
 	orderRepository.DB.WithContext(ctx).
-		Table("tb_order").
-		Select("tb_order.order_id, tb_order.total_price, tb_order_detail.order_detail_id, tb_order_detail.sub_total_price, tb_order_detail.price, tb_order_detail.quantity, tb_product.product_id, tb_product.name, tb_product.price, tb_product.quantity").
-		Joins("join tb_order_detail on tb_order_detail.order_id = tb_order.order_id").
-		Joins("join tb_product on tb_product.product_id = tb_order_detail.product_id").
+		Table("order").
+		Select("order.order_id, order.total_price, order_detail.order_detail_id, order_detail.sub_total_price, order_detail.price, order_detail.quantity, tb_product.product_id, tb_product.name, tb_product.price, tb_product.quantity").
+		Joins("join order_detail on order_detail.order_id = order.order_id").
+		Joins("join tb_product on tb_product.product_id = order_detail.product_id").
 		Preload("OrderDetails").
 		Preload("OrderDetails.Product").
+		Find(&orders)
+	return orders
+}
+
+func (orderRepository *orderRepositoryImpl) FindMyOrders(ctx context.Context, userId string) []entity.Order {
+	var orders []entity.Order
+	orderRepository.DB.WithContext(ctx).
+		Table("order").
+		Select(`"order".id, "order".total_price, "order_detail".order_detail_id, "order_detail".sub_total_price, "order_detail".price, "order_detail".quantity, "product".product_id, "product".name, "product".price, "product".description, "product".image`).
+		Joins(`join "order_detail" on "order_detail".order_id = "order".id`).
+		Joins(`join "product" on "product".product_id = "order_detail".product_id`).
+		Preload("OrderDetails").
+		Preload("OrderDetails.Product").
+		Where(`"order".user_id = ?`, userId).
 		Find(&orders)
 	return orders
 }
